@@ -1,0 +1,1 @@
+// Content of the storage.js file goes here.
