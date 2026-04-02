@@ -1,0 +1,276 @@
+<!-- Page Login - Punchi Battle -->
+<style>
+    .auth-page {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .auth-container {
+        background: var(--pb-gray-dark);
+        border-radius: 24px;
+        padding: 3rem;
+        width: 100%;
+        max-width: 450px;
+        border: 1px solid var(--pb-gray);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-header h1 {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+        color: var(--text-secondary);
+    }
+
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .auth-input {
+        background: var(--pb-dark);
+        border: 2px solid var(--pb-gray);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s;
+        width: 100%;
+    }
+
+    .auth-input:focus {
+        outline: none;
+        border-color: var(--pb-red);
+        box-shadow: 0 0 0 3px rgba(255, 42, 42, 0.1);
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+    }
+
+    .auth-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+    }
+
+    .forgot-password {
+        color: var(--pb-red);
+        text-decoration: none;
+    }
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+    .auth-btn {
+        background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+        border: none;
+        color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .auth-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--glow-red);
+    }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1.5rem 0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--pb-gray);
+    }
+
+    .social-auth {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-btn {
+        flex: 1;
+        background: var(--pb-dark);
+        border: 1px solid var(--pb-gray);
+        color: var(--text-primary);
+        padding: 0.875rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .social-btn:hover {
+        border-color: var(--pb-red);
+        background: rgba(255, 42, 42, 0.1);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--text-secondary);
+    }
+
+    .auth-footer a {
+        color: var(--pb-red);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .error-message {
+        background: rgba(255, 0, 0, 0.1);
+        border: 1px solid rgba(255, 0, 0, 0.3);
+        color: #f87171;
+        padding: 1rem;
+        border-radius: 8px;
+        display: none;
+    }
+
+    .error-message.show {
+        display: block;
+    }
+</style>
+
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>⚡ Connexion</h1>
+            <p>Retrouve tes battles et continue ta légende</p>
+        </div>
+
+        <div class="error-message" id="error-msg"></div>
+
+        <form class="auth-form" onsubmit="return handleLogin(event)">
+            <div class="input-group">
+                <label class="input-label">Email ou pseudo</label>
+                <input type="text" class="auth-input" id="login-email" placeholder="shadow@example.com" required>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Mot de passe</label>
+                <input type="password" class="auth-input" id="login-password" placeholder="••••••••" required>
+            </div>
+
+            <div class="auth-options">
+                <label class="remember-me">
+                    <input type="checkbox" checked>
+                    <span>Se souvenir de moi</span>
+                </label>
+                <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+            </div>
+
+            <button type="submit" class="auth-btn">Se connecter</button>
+        </form>
+
+        <div class="auth-divider">Ou continue avec</div>
+
+        <div class="social-auth">
+            <button class="social-btn" onclick="socialLogin('google')">
+                <span>🔍</span>
+                <span>Google</span>
+            </button>
+            <button class="social-btn" onclick="socialLogin('twitter')">
+                <span>🐦</span>
+                <span>Twitter</span>
+            </button>
+        </div>
+
+        <div class="auth-footer">
+            Pas encore de compte ? <a href="#register">Inscris-toi</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handleLogin(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const errorEl = document.getElementById('error-msg');
+        
+        const result = Auth.login(email, password);
+        
+        if (result.success) {
+            Router.navigate('battles');
+        } else {
+            errorEl.textContent = result.error;
+            errorEl.classList.add('show');
+        }
+        
+        return false;
+    }
+    
+    function socialLogin(provider) {
+        alert('Connexion ' + provider + ' à implémenter avec Firebase Auth');
+    }
+</script>
