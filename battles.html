@@ -1,0 +1,738 @@
+<!-- Page Battles - Punchi Battle -->
+<style>
+    .battles-page {
+        padding: 2rem 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .theme-banner {
+        background: linear-gradient(135deg, rgba(255, 42, 42, 0.1) 0%, rgba(26, 26, 37, 0.8) 100%);
+        border: 1px solid rgba(255, 42, 42, 0.3);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .theme-banner::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--pb-red), transparent);
+    }
+
+    .theme-timer {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--pb-dark);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--pb-gray);
+    }
+
+    .timer-display {
+        font-family: monospace;
+        font-size: 1.5rem;
+        color: var(--pb-gold);
+        font-weight: 700;
+    }
+
+    .theme-title {
+        font-family: var(--font-display);
+        font-size: 4rem;
+        letter-spacing: 5px;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 50%, var(--pb-gold) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .theme-stats {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 2rem;
+    }
+
+    .theme-stat {
+        text-align: center;
+    }
+
+    .theme-stat-value {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        color: var(--pb-gold);
+    }
+
+    .theme-stat-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    /* Filters */
+    .battles-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 0.5rem;
+        background: var(--pb-gray-dark);
+        padding: 0.5rem;
+        border-radius: 12px;
+    }
+
+    .filter-tab {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .filter-tab:hover, .filter-tab.active {
+        background: var(--pb-red);
+        color: white;
+    }
+
+    .sort-dropdown {
+        position: relative;
+    }
+
+    .sort-btn {
+        background: var(--pb-gray-dark);
+        border: 1px solid var(--pb-gray);
+        color: var(--text-primary);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Grid */
+    .battles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .battle-card {
+        background: var(--pb-gray-dark);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid var(--pb-gray);
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .battle-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--pb-red);
+        box-shadow: var(--shadow-card);
+    }
+
+    .battle-card.winner {
+        border-color: var(--pb-gold);
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, var(--pb-gray-dark) 100%);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .rapper-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .rapper-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        border: 2px solid var(--pb-gold);
+        position: relative;
+    }
+
+    .verified-badge {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        background: var(--pb-gold);
+        color: var(--pb-black);
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+    }
+
+    .rapper-info h4 {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .rapper-info .meta {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .style-tag {
+        background: var(--pb-gray);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .punchline-text {
+        font-size: 1.15rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: rgba(0,0,0,0.2);
+        border-radius: 12px;
+        border-left: 4px solid var(--pb-red);
+        font-style: italic;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .vote-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .vote-btn-large {
+        background: transparent;
+        border: 2px solid var(--pb-red);
+        color: var(--pb-red);
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+    }
+
+    .vote-btn-large:hover, .vote-btn-large.voted {
+        background: var(--pb-red);
+        color: white;
+        box-shadow: var(--glow-red);
+    }
+
+    .vote-btn-large.voted {
+        background: var(--pb-gold);
+        border-color: var(--pb-gold);
+        color: var(--pb-black);
+    }
+
+    .vote-count-large {
+        text-align: center;
+    }
+
+    .vote-count-large .number {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        color: var(--pb-gold);
+        display: block;
+    }
+
+    .vote-count-large .label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--pb-gray);
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-btn:hover {
+        border-color: var(--pb-red);
+        color: var(--pb-red);
+    }
+
+    /* Submit Section */
+    .submit-section {
+        background: var(--pb-gray-dark);
+        border-radius: 20px;
+        padding: 2.5rem;
+        border: 1px solid var(--pb-gray);
+        margin-top: 3rem;
+    }
+
+    .submit-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .submit-header h2 {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+    }
+
+    .char-counter {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .char-counter.warning { color: var(--pb-orange); }
+    .char-counter.danger { color: var(--pb-red); }
+
+    .submit-form {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1rem;
+    }
+
+    .input-field {
+        background: var(--pb-dark);
+        border: 2px solid var(--pb-gray);
+        border-radius: 12px;
+        padding: 1rem;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .input-field:focus {
+        outline: none;
+        border-color: var(--pb-red);
+        box-shadow: 0 0 0 3px rgba(255, 42, 42, 0.1);
+    }
+
+    textarea.input-field {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    select.input-field {
+        cursor: pointer;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-secondary {
+        background: var(--pb-gray);
+        border: none;
+        color: var(--text-primary);
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+    }
+
+    .btn-secondary:hover {
+        background: var(--pb-gray-light);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+        border: none;
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--glow-red);
+    }
+
+    @media (max-width: 768px) {
+        .theme-title { font-size: 2.5rem; }
+        .battles-grid { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+        .battles-toolbar { flex-direction: column; align-items: stretch; }
+    }
+</style>
+
+<div class="battles-page">
+    <!-- Theme Banner -->
+    <div class="theme-banner">
+        <div class="theme-timer">
+            <span>⏱️</span>
+            <span class="timer-display" id="battle-timer">23:59:59</span>
+        </div>
+        <h1 class="theme-title" id="current-theme">LA TRAHISON</h1>
+        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+            Les loyautés testées, les masques tombés. Montre-nous ta vision de la trahison en 280 caractères.
+        </p>
+        <div class="theme-stats">
+            <div class="theme-stat">
+                <div class="theme-stat-value" id="stat-entries">142</div>
+                <div class="theme-stat-label">Punchlines</div>
+            </div>
+            <div class="theme-stat">
+                <div class="theme-stat-value" id="stat-votes">8.2K</div>
+                <div class="theme-stat-label">Votes</div>
+            </div>
+            <div class="theme-stat">
+                <div class="theme-stat-value" id="stat-mcs">89</div>
+                <div class="theme-stat-label">MCs</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="battles-toolbar">
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterBattles('all')">Tout</button>
+            <button class="filter-tab" onclick="filterBattles('trending')">🔥 Tendance</button>
+            <button class="filter-tab" onclick="filterBattles('recent')">⏰ Récent</button>
+            <button class="filter-tab" onclick="filterBattles('top')">⭐ Top</button>
+        </div>
+        
+        <div class="sort-dropdown">
+            <button class="sort-btn">
+                <span>Trier par : Popularité</span>
+                <span>▼</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Battles Grid -->
+    <div class="battles-grid" id="battles-grid">
+        <!-- Injecté par JS -->
+    </div>
+
+    <!-- Load More -->
+    <div style="text-align: center; margin: 3rem 0;">
+        <button class="btn-secondary" onclick="loadMore()" style="padding: 1rem 3rem;">
+            Charger plus de punchlines
+        </button>
+    </div>
+
+    <!-- Submit Section -->
+    <div class="submit-section" id="submit-section">
+        <div class="submit-header">
+            <h2>✍️ Poster ma Punchline</h2>
+            <span class="char-counter" id="char-counter">0 / 280</span>
+        </div>
+        
+        <form class="submit-form" onsubmit="return submitPunchline(event)">
+            <div class="form-row">
+                <input type="text" class="input-field" id="submit-name" placeholder="Ton blaze de rappeur" required maxlength="20">
+                <select class="input-field" id="submit-style">
+                    <option value="hardcore">Hardcore</option>
+                    <option value="conscious">Conscient</option>
+                    <option value="melodic">Mélodique</option>
+                    <option value="trap">Trap</option>
+                    <option value="oldschool">Old School</option>
+                    <option value="freestyle">Freestyle</option>
+                </select>
+            </div>
+            
+            <textarea class="input-field" id="submit-text" placeholder="Balance ta punchline sur le thème du jour..." required maxlength="280"></textarea>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="previewPunchline()">👁️ Prévisualiser</button>
+                <button type="submit" class="btn-primary">🚀 Poster</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.pageInit = function() {
+        startTimer();
+        loadBattles();
+        initCharCounter();
+        
+        // Vérifier si connecté pour afficher/masquer formulaire
+        if (!Auth.isLoggedIn()) {
+            document.getElementById('submit-section').innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <h2>🔒 Connexion requise</h2>
+                    <p style="color: var(--text-secondary); margin: 1rem 0;">Connecte-toi pour poster ta punchline et voter</p>
+                    <button class="btn-primary" onclick="Router.navigate('login')" style="margin-top: 1rem;">Se connecter</button>
+                </div>
+            `;
+        }
+    };
+    
+    let currentFilter = 'all';
+    let displayedCount = 6;
+    
+    function startTimer() {
+        let hours = 23, minutes = 59, seconds = 59;
+        setInterval(() => {
+            seconds--;
+            if (seconds < 0) { seconds = 59; minutes--; }
+            if (minutes < 0) { minutes = 59; hours--; }
+            if (hours < 0) { hours = 23; minutes = 59; seconds = 59; }
+            
+            document.getElementById('battle-timer').textContent = 
+                `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+        }, 1000);
+    }
+    
+    function loadBattles() {
+        const punchlines = Storage.get('punchlines', []);
+        const container = document.getElementById('battles-grid');
+        
+        let filtered = punchlines;
+        if (currentFilter === 'trending') filtered = punchlines.filter(p => p.votes > 100);
+        if (currentFilter === 'recent') filtered = [...punchlines].reverse();
+        if (currentFilter === 'top') filtered = [...punchlines].sort((a,b) => b.votes - a.votes);
+        
+        const toShow = filtered.slice(0, displayedCount);
+        
+        container.innerHTML = toShow.map(p => `
+            <article class="battle-card ${p.isWinner ? 'winner' : ''}">
+                <div class="card-header">
+                    <div class="rapper-profile">
+                        <div class="rapper-avatar">
+                            ${p.authorAvatar}
+                            ${p.verified ? '<span class="verified-badge">✓</span>' : ''}
+                        </div>
+                        <div class="rapper-info">
+                            <h4>${p.authorName}</h4>
+                            <div class="meta">
+                                <span>${formatTime(p.timestamp)}</span>
+                                <span class="style-tag">${p.style}</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${p.isWinner ? '<span style="color: var(--pb-gold); font-size: 1.5rem;">👑</span>' : ''}
+                </div>
+                
+                <div class="punchline-text">"${p.text}"</div>
+                
+                <div class="card-footer">
+                    <div class="vote-section">
+                        <button class="vote-btn-large ${hasVoted(p.id) ? 'voted' : ''}" onclick="vote(${p.id})" ${!Auth.isLoggedIn() ? 'disabled title="Connecte-toi pour voter"' : ''}>
+                            ${hasVoted(p.id) ? '✓ Voté' : '🔥 Voter'}
+                        </button>
+                        <div class="vote-count-large">
+                            <span class="number">${p.votes}</span>
+                            <span class="label">votes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <button class="action-btn" onclick="sharePunchline(${p.id})" title="Partager">📤</button>
+                        <button class="action-btn" onclick="reportPunchline(${p.id})" title="Signaler">⚠️</button>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+    }
+    
+    function filterBattles(type) {
+        currentFilter = type;
+        document.querySelectorAll('.filter-tab').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        loadBattles();
+    }
+    
+    function loadMore() {
+        displayedCount += 6;
+        loadBattles();
+    }
+    
+    function vote(id) {
+        if (!Auth.isLoggedIn()) return;
+        
+        const punchlines = Storage.get('punchlines', []);
+        const p = punchlines.find(x => x.id === id);
+        if (!p) return;
+        
+        const userVotes = Storage.get('user_votes', {});
+        const userId = Auth.currentUser.id;
+        
+        if (!userVotes[userId]) userVotes[userId] = [];
+        
+        if (userVotes[userId].includes(id)) {
+            // Unvote
+            userVotes[userId] = userVotes[userId].filter(v => v !== id);
+            p.votes--;
+        } else {
+            // Vote
+            userVotes[userId].push(id);
+            p.votes++;
+        }
+        
+        Storage.set('punchlines', punchlines);
+        Storage.set('user_votes', userVotes);
+        loadBattles();
+    }
+    
+    function hasVoted(id) {
+        if (!Auth.isLoggedIn()) return false;
+        const userVotes = Storage.get('user_votes', {});
+        return (userVotes[Auth.currentUser.id] || []).includes(id);
+    }
+    
+    function initCharCounter() {
+        const textarea = document.getElementById('submit-text');
+        const counter = document.getElementById('char-counter');
+        if (!textarea) return;
+        
+        textarea.addEventListener('input', () => {
+            const len = textarea.value.length;
+            counter.textContent = `${len} / 280`;
+            counter.className = 'char-counter';
+            if (len > 250) counter.classList.add('warning');
+            if (len > 270) counter.classList.add('danger');
+        });
+    }
+    
+    function submitPunchline(e) {
+        e.preventDefault();
+        if (!Auth.isLoggedIn()) {
+            Router.navigate('login');
+            return false;
+        }
+        
+        const name = document.getElementById('submit-name').value;
+        const style = document.getElementById('submit-style').value;
+        const text = document.getElementById('submit-text').value;
+        
+        const newPunchline = {
+            id: Date.now(),
+            authorId: Auth.currentUser.id,
+            authorName: name,
+            authorAvatar: name.substring(0, 2).toUpperCase(),
+            themeId: Storage.get('currentTheme').id,
+            text: text,
+            style: style,
+            votes: 0,
+            timestamp: Date.now(),
+            comments: 0,
+            isWinner: false,
+            verified: Auth.currentUser.isVerified
+        };
+        
+        const punchlines = Storage.get('punchlines', []);
+        punchlines.unshift(newPunchline);
+        Storage.set('punchlines', punchlines);
+        
+        // Reset form
+        e.target.reset();
+        document.getElementById('char-counter').textContent = '0 / 280';
+        
+        // Reload
+        loadBattles();
+        
+        // Notification
+        showNotification('Punchline postée avec succès ! 🔥');
+        return false;
+    }
+    
+    function previewPunchline() {
+        const text = document.getElementById('submit-text').value;
+        const name = document.getElementById('submit-name').value || 'Toi';
+        if (!text) return;
+        
+        alert(`👁️ PRÉVISUALISATION\n\n"${text}"\n\n— ${name}`);
+    }
+    
+    function sharePunchline(id) {
+        const p = Storage.get('punchlines', []).find(x => x.id === id);
+        if (!p) return;
+        
+        const text = `"${p.text}" — ${p.authorName} sur #PunchiBattle`;
+        
+        if (navigator.share) {
+            navigator.share({ title: 'Punchi Battle', text: text, url: window.location.href });
+        } else {
+            navigator.clipboard.writeText(text).then(() => showNotification('Copié dans le presse-papiers !'));
+        }
+    }
+    
+    function reportPunchline(id) {
+        const reason = prompt('Pourquoi signalez-vous cette punchline ?\n1. Contenu inapproprié\n2. Plagiat\n3. Spam\n4. Autre');
+        if (reason) showNotification('Signalement envoyé. Merci !');
+    }
+    
+    function formatTime(timestamp) {
+        const diff = Date.now() - timestamp;
+        const mins = Math.floor(diff / 60000);
+        if (mins < 60) return `Il y a ${mins} min`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `Il y a ${hours}h`;
+        return `Il y a ${Math.floor(hours / 24)}j`;
+    }
+    
+    function showNotification(msg) {
+        // Simple notification (à améliorer avec un vrai système de toast)
+        const div = document.createElement('div');
+        div.style.cssText = 'position: fixed; top: 100px; right: 20px; background: var(--pb-red); color: white; padding: 1rem 2rem; border-radius: 8px; z-index: 10000; animation: slideInRight 0.3s;';
+        div.textContent = msg;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 3000);
+    }
+</script>
