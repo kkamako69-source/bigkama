@@ -1,0 +1,679 @@
+<!-- Page Profil - Punchi Battle -->
+<style>
+    .profile-page {
+        padding: 2rem 5%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        background: var(--pb-gray-dark);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 150px;
+        background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+        opacity: 0.3;
+    }
+
+    .profile-main {
+        display: flex;
+        gap: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-avatar-large {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 700;
+        border: 5px solid var(--pb-gold);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        position: relative;
+    }
+
+    .edit-avatar {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 40px;
+        height: 40px;
+        background: var(--pb-dark);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid var(--pb-gold);
+        transition: all 0.3s;
+    }
+
+    .edit-avatar:hover {
+        background: var(--pb-red);
+    }
+
+    .profile-info {
+        flex: 1;
+        padding-top: 1rem;
+    }
+
+    .profile-name-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-name-section h1 {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+
+    .badges {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-verified {
+        background: var(--pb-gold);
+        color: var(--pb-black);
+    }
+
+    .badge-founder {
+        background: var(--pb-red);
+        color: white;
+    }
+
+    .badge-premium {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .profile-username {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .profile-bio {
+        color: var(--text-secondary);
+        max-width: 500px;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-edit {
+        background: var(--pb-gray);
+        border: none;
+        color: var(--text-primary);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-edit:hover {
+        background: var(--pb-gray-light);
+    }
+
+    .btn-share-profile {
+        background: transparent;
+        border: 2px solid var(--pb-red);
+        color: var(--pb-red);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-share-profile:hover {
+        background: var(--pb-red);
+        color: white;
+    }
+
+    /* Profile Stats */
+    .profile-stats-bar {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-stat-card {
+        background: var(--pb-gray-dark);
+        padding: 1.5rem;
+        border-radius: 16px;
+        text-align: center;
+        border: 1px solid var(--pb-gray);
+        transition: all 0.3s;
+    }
+
+    .profile-stat-card:hover {
+        border-color: var(--pb-red);
+        transform: translateY(-5px);
+    }
+
+    .profile-stat-value {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        color: var(--pb-gold);
+    }
+
+    .profile-stat-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    /* Profile Content */
+    .profile-content {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+    }
+
+    /* Sidebar */
+    .profile-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sidebar-card {
+        background: var(--pb-gray-dark);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid var(--pb-gray);
+    }
+
+    .sidebar-card h3 {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--pb-gray);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        font-weight: 600;
+    }
+
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    .achievement {
+        aspect-ratio: 1;
+        background: var(--pb-gray);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .achievement:hover {
+        background: var(--pb-gray-light);
+        transform: scale(1.1);
+    }
+
+    .achievement.locked {
+        opacity: 0.3;
+        filter: grayscale(1);
+    }
+
+    .achievement-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--pb-dark);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s;
+    }
+
+    .achievement:hover .achievement-tooltip {
+        opacity: 1;
+        bottom: 110%;
+    }
+
+    /* Main Content */
+    .profile-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--pb-gray);
+        padding-bottom: 1rem;
+    }
+
+    .profile-tab {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .profile-tab:hover, .profile-tab.active {
+        color: var(--text-primary);
+        background: rgba(255, 42, 42, 0.1);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .punchlines-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .my-punchline {
+        background: var(--pb-gray-dark);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--pb-gray);
+    }
+
+    .my-punchline-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+
+    .my-punchline-theme {
+        font-size: 0.85rem;
+        color: var(--pb-red);
+        text-transform: uppercase;
+    }
+
+    .my-punchline-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .my-punchline-text {
+        font-style: italic;
+        margin-bottom: 1rem;
+        padding-left: 1rem;
+        border-left: 3px solid var(--pb-red);
+    }
+
+    .my-punchline-stats {
+        display: flex;
+        gap: 2rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 1024px) {
+        .profile-main { flex-direction: column; align-items: center; text-align: center; }
+        .profile-actions { justify-content: center; }
+        .profile-stats-bar { grid-template-columns: repeat(2, 1fr); }
+        .profile-content { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="profile-page">
+    <!-- Header -->
+    <div class="profile-header">
+        <div class="profile-main">
+            <div class="profile-avatar-large" id="profile-avatar">
+                SP
+                <div class="edit-avatar" onclick="editAvatar()" title="Changer photo">📷</div>
+            </div>
+            
+            <div class="profile-info">
+                <div class="profile-name-section">
+                    <h1 id="profile-name">Shadow Prime</h1>
+                    <div class="badges" id="profile-badges">
+                        <span class="badge badge-founder">Fondateur</span>
+                        <span class="badge badge-verified">Vérifié</span>
+                    </div>
+                </div>
+                
+                <div class="profile-username" id="profile-handle">@ShadowPrime</div>
+                
+                <p class="profile-bio" id="profile-bio">
+                    Fondateur de Punchi Battle. Rappeur hardcore depuis 2010. 
+                    Toujours à la recherche de la punchline parfaite. 🎤🔥
+                </p>
+                
+                <div class="profile-actions">
+                    <button class="btn-edit" onclick="editProfile()">
+                        ✏️ Modifier profil
+                    </button>
+                    <button class="btn-share-profile" onclick="shareProfile()">
+                        🔗 Partager
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="profile-stats-bar">
+        <div class="profile-stat-card">
+            <div class="profile-stat-value" id="stat-battles">156</div>
+            <div class="profile-stat-label">Battles</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-value" id="stat-wins">89</div>
+            <div class="profile-stat-label">Victoires</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-value" id="stat-votes">12.5K</div>
+            <div class="profile-stat-label">Votes reçus</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-value" id="stat-rank">#1</div>
+            <div class="profile-stat-label">Classement</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-value" id="stat-streak">12</div>
+            <div class="profile-stat-label">Streak</div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="profile-content">
+        <!-- Sidebar -->
+        <div class="profile-sidebar">
+            <div class="sidebar-card">
+                <h3>📊 Informations</h3>
+                <div class="info-row">
+                    <span class="info-label">Style</span>
+                    <span class="info-value" id="info-style">Hardcore</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Membre depuis</span>
+                    <span class="info-value" id="info-joined">Janvier 2024</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Localisation</span>
+                    <span class="info-value" id="info-location">Paris, France</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Site web</span>
+                    <span class="info-value" id="info-website">shadowprime.fr</span>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>🏆 Succès</h3>
+                <div class="achievements-grid" id="achievements-grid">
+                    <div class="achievement" title="Fondateur">👑
+                        <span class="achievement-tooltip">Fondateur</span>
+                    </div>
+                    <div class="achievement" title="Légende">⭐
+                        <span class="achievement-tooltip">Légende</span>
+                    </div>
+                    <div class="achievement" title="Vétéran">🎖️
+                        <span class="achievement-tooltip">Vétéran</span>
+                    </div>
+                    <div class="achievement locked" title="Verrouillé">🔒</div>
+                    <div class="achievement locked" title="Verrouillé">🔒</div>
+                    <div class="achievement locked" title="Verrouillé">🔒</div>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>👥 Réseau</h3>
+                <div class="info-row">
+                    <span class="info-label">Abonnés</span>
+                    <span class="info-value" id="info-followers">1,250</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Abonnements</span>
+                    <span class="info-value" id="info-following">89</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div>
+            <div class="profile-tabs">
+                <button class="profile-tab active" onclick="switchTab('punchlines')">📝 Mes Punchlines</button>
+                <button class="profile-tab" onclick="switchTab('wins')">🏆 Victoires</button>
+                <button class="profile-tab" onclick="switchTab('votes')">🗳️ Votes</button>
+                <button class="profile-tab" onclick="switchTab('settings')">⚙️ Paramètres</button>
+            </div>
+
+            <div id="tab-punchlines" class="tab-content active">
+                <div class="punchlines-list" id="my-punchlines">
+                    <!-- Injecté par JS -->
+                </div>
+            </div>
+
+            <div id="tab-wins" class="tab-content">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🏆</div>
+                    <h3>Vos victoires apparaîtront ici</h3>
+                    <p>Continuez à poster des punchlines de qualité !</p>
+                </div>
+            </div>
+
+            <div id="tab-votes" class="tab-content">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🗳️</div>
+                    <h3>Vos votes apparaîtront ici</h3>
+                    <p>Votez pour vos punchlines préférées !</p>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="tab-content">
+                <div class="sidebar-card">
+                    <h3>🔔 Notifications</h3>
+                    <label style="display: flex; align-items: center; gap: 0.75rem; margin: 1rem 0; cursor: pointer;">
+                        <input type="checkbox" checked style="width: 20px; height: 20px;">
+                        <span>Recevoir des notifications par email</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.75rem; margin: 1rem 0; cursor: pointer;">
+                        <input type="checkbox" checked style="width: 20px; height: 20px;">
+                        <span>Notifications de nouveaux votes</span>
+                    </label>
+                </div>
+                
+                <div class="sidebar-card" style="margin-top: 1rem;">
+                    <h3>🔒 Confidentialité</h3>
+                    <label style="display: flex; align-items: center; gap: 0.75rem; margin: 1rem 0; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span>Profil privé</span>
+                    </label>
+                </div>
+
+                <div class="sidebar-card" style="margin-top: 1rem; border-color: var(--pb-red);">
+                    <h3 style="color: var(--pb-red);">⚠️ Zone dangereuse</h3>
+                    <button class="btn-edit" onclick="logout()" style="margin-top: 1rem; width: 100%; justify-content: center;">
+                        🚪 Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.pageInit = function() {
+        if (!Auth.isLoggedIn()) {
+            Router.navigate('login');
+            return;
+        }
+        
+        loadProfile();
+        loadMyPunchlines();
+    };
+    
+    function loadProfile() {
+        const user = Auth.currentUser;
+        if (!user) return;
+        
+        document.getElementById('profile-name').textContent = user.displayName;
+        document.getElementById('profile-handle').textContent = '@' + user.username;
+        document.getElementById('profile-avatar').innerHTML = user.avatar + '<div class="edit-avatar" onclick="editAvatar()">📷</div>';
+        document.getElementById('profile-bio').textContent = user.bio || 'Aucune bio';
+        
+        // Stats
+        document.getElementById('stat-battles').textContent = user.stats.battles;
+        document.getElementById('stat-wins').textContent = user.stats.wins;
+        document.getElementById('stat-votes').textContent = formatNumber(user.stats.votesReceived);
+        document.getElementById('stat-streak').textContent = user.stats.streak;
+        
+        // Badges
+        const badgesContainer = document.getElementById('profile-badges');
+        badgesContainer.innerHTML = '';
+        if (user.isVerified) badgesContainer.innerHTML += '<span class="badge badge-verified">Vérifié</span>';
+        if (user.achievements.includes('founder')) badgesContainer.innerHTML += '<span class="badge badge-founder">Fondateur</span>';
+        if (user.isPremium) badgesContainer.innerHTML += '<span class="badge badge-premium">Premium</span>';
+    }
+    
+    function loadMyPunchlines() {
+        const user = Auth.currentUser;
+        const punchlines = Storage.get('punchlines', []).filter(p => p.authorId === user.id);
+        const container = document.getElementById('my-punchlines');
+        
+        if (punchlines.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎤</div>
+                    <h3>Aucune punchline encore</h3>
+                    <p>Participe à ton premier battle pour voir tes punchlines ici !</p>
+                    <button class="btn-glow" onclick="Router.navigate('battles')" style="margin-top: 1rem;">Participer</button>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = punchlines.map(p => `
+            <div class="my-punchline">
+                <div class="my-punchline-header">
+                    <span class="my-punchline-theme">${Storage.get('themes', []).find(t => t.id === p.themeId)?.title || 'Battle'}</span>
+                    <span class="my-punchline-date">${new Date(p.timestamp).toLocaleDateString()}</span>
+                </div>
+                <div class="my-punchline-text">"${p.text}"</div>
+                <div class="my-punchline-stats">
+                    <span>🔥 ${p.votes} votes</span>
+                    <span>💬 ${p.comments} commentaires</span>
+                    <span style="${p.isWinner ? 'color: var(--pb-gold);' : ''}">${p.isWinner ? '👑 Gagnant' : ''}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function switchTab(tab) {
+        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+    }
+    
+    function editProfile() {
+        const newBio = prompt('Nouvelle bio:', Auth.currentUser.bio);
+        if (newBio !== null) {
+            Auth.updateProfile({ bio: newBio });
+            loadProfile();
+        }
+    }
+    
+    function editAvatar() {
+        alert('Fonctionnalité à venir: Upload de photo de profil');
+    }
+    
+    function shareProfile() {
+        const url = window.location.origin + '/#profil/' + Auth.currentUser.id;
+        navigator.clipboard.writeText(url).then(() => alert('Lien copié !'));
+    }
+    
+    function logout() {
+        if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+            Auth.logout();
+        }
+    }
+    
+    function formatNumber(num) {
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num;
+    }
+</script>
