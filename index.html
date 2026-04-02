@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punchi Battle | L'Arène des MCs</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --pb-red: #ff2a2a;
+            --pb-red-dark: #cc0000;
+            --pb-orange: #ff6b35;
+            --pb-gold: #ffd700;
+            --pb-black: #0a0a0f;
+            --pb-dark: #12121a;
+            --pb-gray-dark: #1a1a25;
+            --pb-gray: #2a2a3a;
+            --pb-gray-light: #4a4a5a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6a6a7a;
+            --glow-red: 0 0 20px rgba(255, 42, 42, 0.5);
+            --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.5);
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--pb-black);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.03; z-index: -1;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .gradient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -2;
+            opacity: 0.4;
+        }
+
+        .orb-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--pb-red) 0%, transparent 70%);
+            top: -200px; right: -200px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-2 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--pb-orange) 0%, transparent 70%);
+            bottom: -100px; left: -100px;
+            animation: float 15s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Header */
+        .main-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 3rem;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 42, 42, 0.2);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .logo-text h1 {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text span {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+            background: rgba(255, 42, 42, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 20px; height: 2px;
+            background: var(--pb-red);
+            border-radius: 2px;
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 0.25rem; right: 0.25rem;
+            font-size: 0.6rem;
+            background: var(--pb-red);
+            color: white;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .user-menu:hover {
+            background: var(--pb-gray-dark);
+        }
+
+        .user-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border: 2px solid var(--pb-gold);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .user-rank {
+            font-size: 0.75rem;
+            color: var(--pb-gold);
+        }
+
+        .btn-login {
+            background: var(--pb-red);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-login:hover {
+            background: var(--pb-red-dark);
+            box-shadow: var(--glow-red);
+        }
+
+        /* Main Content */
+        #app-container {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Loading */
+        .page-loader {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--pb-black);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-vinyl {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background: var(--pb-gray-dark);
+            position: relative;
+            animation: spin 2s linear infinite;
+        }
+
+        .loader-vinyl::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border-radius: 50%;
+            background: repeating-radial-gradient(circle at center, var(--pb-gray) 0px, var(--pb-gray) 2px, var(--pb-dark) 3px, var(--pb-dark) 4px);
+        }
+
+        .loader-vinyl::after {
+            content: 'PB';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px; height: 30px;
+            background: var(--pb-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            border: 2px solid var(--pb-gold);
+        }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Footer */
+        .main-footer {
+            background: var(--pb-dark);
+            border-top: 1px solid var(--pb-gray);
+            padding: 3rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 3fr;
+            gap: 4rem;
+        }
+
+        .footer-brand h3 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .social-link:hover { color: var(--pb-red); }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .link-group h4 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .link-group a {
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .link-group a:hover { color: var(--pb-red); }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--pb-gray);
+            color: var(--text-muted);
+            margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-header { padding: 1rem; }
+            .nav-text { display: none; }
+            .user-info { display: none; }
+            .footer-content { grid-template-columns: 1fr; }
+            .footer-links { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+
+    <!-- Loader -->
+    <div class="page-loader" id="page-loader">
+        <div class="loader-vinyl"></div>
+        <p style="margin-top: 1rem; color: var(--text-muted);">Chargement...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-brand">
+            <span class="logo-icon">⚡</span>
+            <div class="logo-text">
+                <h1>PUNCHI BATTLE</h1>
+                <span>L'Arène des MCs</span>
+            </div>
+        </div>
+
+        <nav class="main-nav">
+            <a href="#accueil" class="nav-link active" data-page="accueil">
+                <span>🏠</span>
+                <span class="nav-text">Accueil</span>
+            </a>
+            <a href="#battles" class="nav-link" data-page="battles">
+                <span>⚔️</span>
+                <span class="nav-text">Battles</span>
+                <span class="live-badge">LIVE</span>
+            </a>
+            <a href="#classement" class="nav-link" data-page="classement">
+                <span>🏆</span>
+                <span class="nav-text">Classement</span>
+            </a>
+            <a href="#profil" class="nav-link" data-page="profil">
+                <span>👤</span>
+                <span class="nav-text">Profil</span>
+            </a>
+        </nav>
+
+        <div class="header-actions" id="header-actions">
+            <!-- Injecté par JS selon auth -->
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main id="app-container"></main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>PUNCHI BATTLE</h3>
+                <p>La plateforme de référence pour les battles de punchlines. Rejoins la communauté SP Team.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">📸 Instagram</a>
+                    <a href="#" class="social-link">🐦 Twitter</a>
+                    <a href="#" class="social-link">📺 YouTube</a>
+                    <a href="#" class="social-link">💬 Discord</a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Plateforme</h4>
+                    <a href="#comment-ca-marche">Comment ça marche</a>
+                    <a href="#regles">Règles du jeu</a>
+                    <a href="#faq">FAQ</a>
+                </div>
+                <div class="link-group">
+                    <h4>Communauté</h4>
+                    <a href="#discord">Discord SP Team</a>
+                    <a href="#evenements">Événements</a>
+                    <a href="#partenaires">Partenaires</a>
+                </div>
+                <div class="link-group">
+                    <h4>Légal</h4>
+                    <a href="#cgu">CGU</a>
+                    <a href="#confidentialite">Confidentialité</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Punchi Battle — Propulsé par <strong style="color: var(--pb-gold);">SP Team</strong> 🎵</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/router.js"></script>
+    <script>
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('page-loader').classList.add('hidden');
+            }, 1000);
+            
+            updateHeaderAuth();
+        });
+    </script>
+</body>
+</html>
