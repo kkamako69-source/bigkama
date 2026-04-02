@@ -1,0 +1,497 @@
+<!-- Page Classement - Punchi Battle -->
+<style>
+    .ranking-page {
+        padding: 2rem 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .ranking-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .ranking-header h1 {
+        font-family: var(--font-display);
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .ranking-header p {
+        color: var(--text-secondary);
+    }
+
+    /* Period Tabs */
+    .period-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 3rem;
+        background: var(--pb-gray-dark);
+        padding: 0.5rem;
+        border-radius: 12px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .period-tab {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .period-tab:hover, .period-tab.active {
+        background: var(--pb-gold);
+        color: var(--pb-black);
+        font-weight: 700;
+    }
+
+    /* Podium */
+    .podium-section {
+        margin-bottom: 4rem;
+    }
+
+    .podium {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 2rem;
+        height: 350px;
+        position: relative;
+    }
+
+    .podium-place {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        transition: all 0.3s;
+    }
+
+    .podium-place:hover {
+        transform: translateY(-10px);
+    }
+
+    .podium-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        position: relative;
+        border: 4px solid;
+    }
+
+    .place-1 .podium-avatar {
+        width: 130px;
+        height: 130px;
+        background: linear-gradient(135deg, var(--pb-gold) 0%, #b8860b 100%);
+        border-color: #fff;
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+        order: 2;
+    }
+
+    .place-2 .podium-avatar {
+        background: linear-gradient(135deg, #c0c0c0 0%, #808080 100%);
+        border-color: #e0e0e0;
+        order: 1;
+    }
+
+    .place-3 .podium-avatar {
+        background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%);
+        border-color: #daa520;
+        order: 3;
+    }
+
+    .crown {
+        position: absolute;
+        top: -30px;
+        font-size: 2.5rem;
+        animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .podium-info {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .podium-info h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .podium-info .wins {
+        color: var(--pb-gold);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .podium-base {
+        width: 140px;
+        border-radius: 8px 8px 0 0;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 1rem;
+    }
+
+    .place-1 .podium-base {
+        height: 180px;
+        background: linear-gradient(180deg, rgba(255, 215, 0, 0.3) 0%, transparent 100%);
+        order: 2;
+    }
+
+    .place-2 .podium-base {
+        height: 130px;
+        background: linear-gradient(180deg, rgba(192, 192, 192, 0.3) 0%, transparent 100%);
+        order: 1;
+    }
+
+    .place-3 .podium-base {
+        height: 90px;
+        background: linear-gradient(180deg, rgba(205, 127, 50, 0.3) 0%, transparent 100%);
+        order: 3;
+    }
+
+    .place-number {
+        font-family: var(--font-display);
+        font-size: 3rem;
+        color: rgba(255,255,255,0.3);
+    }
+
+    /* Ranking List */
+    .ranking-list {
+        background: var(--pb-gray-dark);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .ranking-item {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.25rem 2rem;
+        border-bottom: 1px solid var(--pb-gray);
+        transition: all 0.3s;
+    }
+
+    .ranking-item:hover {
+        background: rgba(255, 42, 42, 0.05);
+    }
+
+    .ranking-item:last-child {
+        border-bottom: none;
+    }
+
+    .rank-number {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        width: 50px;
+        text-align: center;
+        color: var(--text-muted);
+    }
+
+    .rank-number.top {
+        color: var(--pb-gold);
+    }
+
+    .rank-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--pb-gray);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        border: 2px solid var(--pb-gray-light);
+    }
+
+    .rank-info {
+        flex: 1;
+    }
+
+    .rank-info h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .verified-icon {
+        color: var(--pb-gold);
+        font-size: 0.9rem;
+    }
+
+    .rank-info p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .rank-stats {
+        display: flex;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .r-stat {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .r-stat-value {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        color: var(--pb-gold);
+    }
+
+    .r-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .trend-indicator {
+        font-size: 1.5rem;
+        width: 40px;
+        text-align: center;
+    }
+
+    .trend-up { color: #4ade80; }
+    .trend-down { color: var(--pb-red); }
+    .trend-stable { color: var(--text-muted); }
+
+    .follow-btn {
+        background: transparent;
+        border: 2px solid var(--pb-red);
+        color: var(--pb-red);
+        padding: 0.5rem 1.25rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+    }
+
+    .follow-btn:hover, .follow-btn.following {
+        background: var(--pb-red);
+        color: white;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: var(--pb-gray-dark);
+        padding: 1.5rem;
+        border-radius: 16px;
+        text-align: center;
+        border: 1px solid var(--pb-gray);
+    }
+
+    .stat-card-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card-value {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        color: var(--pb-gold);
+    }
+
+    .stat-card-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+        .podium { height: 280px; gap: 1rem; }
+        .podium-avatar { width: 70px !important; height: 70px !important; font-size: 1.5rem !important; }
+        .podium-base { width: 100px !important; }
+        .ranking-item { flex-wrap: wrap; gap: 1rem; }
+        .rank-stats { width: 100%; justify-content: space-around; padding-top: 1rem; border-top: 1px solid var(--pb-gray); }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+
+<div class="ranking-page">
+    <div class="ranking-header">
+        <h1>🏆 HALL OF FAME</h1>
+        <p>Les légendes de Punchi Battle</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-icon">🎤</div>
+            <div class="stat-card-value" id="stat-total-battles">1,247</div>
+            <div class="stat-card-label">Battles</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon">👥</div>
+            <div class="stat-card-value" id="stat-total-users">8.5K</div>
+            <div class="stat-card-label">MCs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon">🗳️</div>
+            <div class="stat-card-value" id="stat-total-votes">45.2K</div>
+            <div class="stat-card-label">Votes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon">🏆</div>
+            <div class="stat-card-value" id="stat-total-winners">156</div>
+            <div class="stat-card-label">Gagnants</div>
+        </div>
+    </div>
+
+    <!-- Period Tabs -->
+    <div class="period-tabs">
+        <button class="period-tab active" onclick="changePeriod('daily')">Aujourd'hui</button>
+        <button class="period-tab" onclick="changePeriod('weekly')">Cette semaine</button>
+        <button class="period-tab" onclick="changePeriod('monthly')">Ce mois</button>
+        <button class="period-tab" onclick="changePeriod('alltime')">All Time</button>
+    </div>
+
+    <!-- Podium -->
+    <div class="podium-section">
+        <div class="podium" id="podium">
+            <!-- Injecté par JS -->
+        </div>
+    </div>
+
+    <!-- Ranking List -->
+    <div class="ranking-list" id="ranking-list">
+        <!-- Injecté par JS -->
+    </div>
+</div>
+
+<script>
+    window.pageInit = function() {
+        loadRankings('daily');
+    };
+    
+    let currentPeriod = 'daily';
+    
+    function changePeriod(period) {
+        currentPeriod = period;
+        document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        loadRankings(period);
+    }
+    
+    function loadRankings(period) {
+        const rankings = Storage.get('rankings', {})[period] || generateMockRankings();
+        
+        // Podium (top 3)
+        const podium = document.getElementById('podium');
+        const top3 = rankings.slice(0, 3);
+        
+        // Réordonner pour affichage: 2ème, 1er, 3ème
+        const ordered = [top3[1], top3[0], top3[2]].filter(Boolean);
+        const positions = ['place-2', 'place-1', 'place-3'];
+        
+        podium.innerHTML = ordered.map((user, i) => `
+            <div class="podium-place ${positions[i]}">
+                <div class="podium-avatar">
+                    ${i === 1 ? '<span class="crown">👑</span>' : ''}
+                    ${user.avatar || user.name.substring(0, 2).toUpperCase()}
+                </div>
+                <div class="podium-info">
+                    <h3>${user.name}</h3>
+                    <div class="wins">${user.wins} victoires</div>
+                </div>
+                <div class="podium-base">
+                    <span class="place-number">${i === 1 ? 1 : i === 0 ? 2 : 3}</span>
+                </div>
+            </div>
+        `).join('');
+        
+        // Liste (4ème+)
+        const list = document.getElementById('ranking-list');
+        const rest = rankings.slice(3);
+        
+        list.innerHTML = rest.map((user, index) => `
+            <div class="ranking-item">
+                <span class="rank-number ${index < 3 ? 'top' : ''}">${user.rank}</span>
+                <div class="rank-avatar">${user.avatar || user.name.substring(0, 2).toUpperCase()}</div>
+                <div class="rank-info">
+                    <h4>
+                        ${user.name}
+                        ${user.verified ? '<span class="verified-icon">✓</span>' : ''}
+                    </h4>
+                    <p>${user.wins} victoires • ${user.battles || 0} battles</p>
+                </div>
+                <div class="rank-stats">
+                    <div class="r-stat">
+                        <span class="r-stat-value">${formatNumber(user.votes)}</span>
+                        <span class="r-stat-label">Votes reçus</span>
+                    </div>
+                    <div class="r-stat">
+                        <span class="r-stat-value">${user.streak || 0}</span>
+                        <span class="r-stat-label">Streak</span>
+                    </div>
+                </div>
+                <span class="trend-indicator trend-${user.trend}">
+                    ${user.trend === 'up' ? '↑' : user.trend === 'down' ? '↓' : '→'}
+                </span>
+                ${Auth.isLoggedIn() ? `
+                    <button class="follow-btn" onclick="toggleFollow('${user.userId}')">
+                        Suivre
+                    </button>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+    
+    function generateMockRankings() {
+        return [
+            { rank: 1, userId: 'u1', name: 'ShadowPrime', wins: 12, votes: 4500, trend: 'up', verified: true, avatar: 'SP', streak: 5 },
+            { rank: 2, userId: 'u2', name: 'Morningstarr', wins: 9, votes: 3200, trend: 'stable', avatar: 'MS' },
+            { rank: 3, userId: 'u3', name: 'BigThug', wins: 8, votes: 2900, trend: 'up', avatar: 'BT' },
+            { rank: 4, userId: 'u4', name: 'NightWolf', wins: 7, votes: 2100, trend: 'down', avatar: 'NW' },
+            { rank: 5, userId: 'u5', name: 'LyricKiller', wins: 6, votes: 1800, trend: 'up', avatar: 'LK' },
+            { rank: 6, userId: 'u6', name: 'FlowMaster', wins: 5, votes: 1500, trend: 'stable', avatar: 'FM' },
+            { rank: 7, userId: 'u7', name: 'StreetPoet', wins: 4, votes: 1200, trend: 'up', avatar: 'ST' },
+            { rank: 8, userId: 'u8', name: 'RimShot', wins: 3, votes: 980, trend: 'down', avatar: 'RS' }
+        ];
+    }
+    
+    function toggleFollow(userId) {
+        const btn = event.target;
+        if (btn.classList.contains('following')) {
+            btn.classList.remove('following');
+            btn.textContent = 'Suivre';
+        } else {
+            btn.classList.add('following');
+            btn.textContent = 'Suivi';
+        }
+    }
+    
+    function formatNumber(num) {
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num;
+    }
+</script>
