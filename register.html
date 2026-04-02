@@ -1,0 +1,458 @@
+<!-- Page Register - Punchi Battle -->
+<style>
+    .auth-page {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .auth-container {
+        background: var(--pb-gray-dark);
+        border-radius: 24px;
+        padding: 3rem;
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid var(--pb-gray);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-header h1 {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+        color: var(--text-secondary);
+    }
+
+    .steps-indicator {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--pb-gray);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--text-muted);
+        position: relative;
+    }
+
+    .step.active {
+        background: var(--pb-red);
+        color: white;
+    }
+
+    .step.completed {
+        background: var(--pb-gold);
+        color: var(--pb-black);
+    }
+
+    .step::after {
+        content: '';
+        position: absolute;
+        right: -2rem;
+        width: 2rem;
+        height: 2px;
+        background: var(--pb-gray);
+    }
+
+    .step:last-child::after {
+        display: none;
+    }
+
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .form-step {
+        display: none;
+    }
+
+    .form-step.active {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .auth-input {
+        background: var(--pb-dark);
+        border: 2px solid var(--pb-gray);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s;
+        width: 100%;
+    }
+
+    .auth-input:focus {
+        outline: none;
+        border-color: var(--pb-red);
+        box-shadow: 0 0 0 3px rgba(255, 42, 42, 0.1);
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .input-hint {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+
+    .style-selector {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .style-option {
+        background: var(--pb-dark);
+        border: 2px solid var(--pb-gray);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .style-option:hover, .style-option.selected {
+        border-color: var(--pb-red);
+        background: rgba(255, 42, 42, 0.1);
+    }
+
+    .style-option .emoji {
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .style-option .name {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .terms {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .terms input {
+        margin-top: 0.25rem;
+    }
+
+    .terms a {
+        color: var(--pb-red);
+    }
+
+    .auth-btn {
+        background: linear-gradient(135deg, var(--pb-red) 0%, var(--pb-orange) 100%);
+        border: none;
+        color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .auth-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--glow-red);
+    }
+
+    .auth-btn-secondary {
+        background: transparent;
+        border: 2px solid var(--pb-gray);
+        color: var(--text-secondary);
+    }
+
+    .auth-btn-secondary:hover {
+        border-color: var(--pb-red);
+        color: var(--pb-red);
+        box-shadow: none;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--text-secondary);
+    }
+
+    .auth-footer a {
+        color: var(--pb-red);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .error-message {
+        background: rgba(255, 0, 0, 0.1);
+        border: 1px solid rgba(255, 0, 0, 0.3);
+        color: #f87171;
+        padding: 1rem;
+        border-radius: 8px;
+        display: none;
+    }
+
+    .error-message.show {
+        display: block;
+    }
+
+    .success-animation {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .success-animation .icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+</style>
+
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>🎤 Inscription</h1>
+            <p>Rejoins la communauté Punchi Battle</p>
+        </div>
+
+        <div class="steps-indicator">
+            <div class="step active" id="step-1-indic">1</div>
+            <div class="step" id="step-2-indic">2</div>
+            <div class="step" id="step-3-indic">3</div>
+        </div>
+
+        <div class="error-message" id="error-msg"></div>
+
+        <!-- Step 1: Identity -->
+        <form class="form-step active" id="step-1" onsubmit="return nextStep(2)">
+            <div class="input-group">
+                <label class="input-label">Ton blaze de rappeur *</label>
+                <input type="text" class="auth-input" id="reg-username" placeholder="Ex: LilShadow, MC Flow..." required maxlength="20">
+                <div class="input-hint">Ce sera ton nom public sur la plateforme</div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Email *</label>
+                <input type="email" class="auth-input" id="reg-email" placeholder="shadow@example.com" required>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Mot de passe *</label>
+                <input type="password" class="auth-input" id="reg-password" placeholder="Min. 6 caractères" required minlength="6">
+            </div>
+
+            <button type="submit" class="auth-btn">Continuer</button>
+        </form>
+
+        <!-- Step 2: Style -->
+        <form class="form-step" id="step-2" onsubmit="return nextStep(3)">
+            <div class="input-group">
+                <label class="input-label">Choisis ton style</label>
+                <div class="style-selector">
+                    <div class="style-option" onclick="selectStyle(this, 'hardcore')">
+                        <span class="emoji">🔥</span>
+                        <span class="name">Hardcore</span>
+                    </div>
+                    <div class="style-option" onclick="selectStyle(this, 'conscious')">
+                        <span class="emoji">🧠</span>
+                        <span class="name">Conscient</span>
+                    </div>
+                    <div class="style-option" onclick="selectStyle(this, 'melodic')">
+                        <span class="emoji">🎵</span>
+                        <span class="name">Mélodique</span>
+                    </div>
+                    <div class="style-option" onclick="selectStyle(this, 'trap')">
+                        <span class="emoji">💰</span>
+                        <span class="name">Trap</span>
+                    </div>
+                    <div class="style-option" onclick="selectStyle(this, 'oldschool')">
+                        <span class="emoji">📻</span>
+                        <span class="name">Old School</span>
+                    </div>
+                    <div class="style-option" onclick="selectStyle(this, 'freestyle')">
+                        <span class="emoji">🎲</span>
+                        <span class="name">Freestyle</span>
+                    </div>
+                </div>
+                <input type="hidden" id="reg-style" value="hardcore">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Bio (optionnel)</label>
+                <input type="text" class="auth-input" id="reg-bio" placeholder="Décris-toi en quelques mots..." maxlength="100">
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="button" class="auth-btn auth-btn-secondary" onclick="prevStep(1)">Retour</button>
+                <button type="submit" class="auth-btn" style="flex: 1;">Continuer</button>
+            </div>
+        </form>
+
+        <!-- Step 3: Confirmation -->
+        <form class="form-step" id="step-3" onsubmit="return handleRegister(event)">
+            <div class="terms">
+                <input type="checkbox" id="reg-terms" required>
+                <label for="reg-terms">J'accepte les <a href="#">Conditions d'utilisation</a> et la <a href="#">Politique de confidentialité</a> de Punchi Battle</label>
+            </div>
+
+            <div class="terms" style="margin-top: 0.5rem;">
+                <input type="checkbox" id="reg-newsletter" checked>
+                <label for="reg-newsletter">Je souhaite recevoir les actualités et les nouveaux thèmes par email</label>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="button" class="auth-btn auth-btn-secondary" onclick="prevStep(2)">Retour</button>
+                <button type="submit" class="auth-btn" style="flex: 1;">🚀 Créer mon compte</button>
+            </div>
+        </form>
+
+        <!-- Success -->
+        <div class="success-animation" id="success-step" style="display: none;">
+            <div class="icon">🎉</div>
+            <h2>Bienvenue dans le game !</h2>
+            <p style="color: var(--text-secondary); margin: 1rem 0;">Ton compte est créé. Redirection...</p>
+        </div>
+
+        <div class="auth-footer" id="auth-footer">
+            Déjà un compte ? <a href="#login">Connecte-toi</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const formData = {};
+    
+    function nextStep(step) {
+        // Validation
+        if (step === 2) {
+            formData.username = document.getElementById('reg-username').value;
+            formData.email = document.getElementById('reg-email').value;
+            formData.password = document.getElementById('reg-password').value;
+            
+            if (formData.password.length < 6) {
+                showError('Le mot de passe doit faire au moins 6 caractères');
+                return false;
+            }
+        }
+        
+        if (step === 3) {
+            formData.style = document.getElementById('reg-style').value;
+            formData.bio = document.getElementById('reg-bio').value;
+        }
+        
+        // UI Update
+        document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step-' + step).classList.add('active');
+        
+        // Update indicators
+        for (let i = 1; i <= 3; i++) {
+            const indic = document.getElementById('step-' + i + '-indic');
+            indic.classList.remove('active', 'completed');
+            if (i === step) indic.classList.add('active');
+            else if (i < step) indic.classList.add('completed');
+        }
+        
+        currentStep = step;
+        return false;
+    }
+    
+    function prevStep(step) {
+        nextStep(step);
+        return false;
+    }
+    
+    function selectStyle(el, style) {
+        document.querySelectorAll('.style-option').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('reg-style').value = style;
+    }
+    
+    function handleRegister(e) {
+        e.preventDefault();
+        
+        const result = Auth.register({
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+            displayName: formData.username,
+            style: formData.style,
+            bio: formData.bio
+        });
+        
+        if (result.success) {
+            document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+            document.getElementById('success-step').style.display = 'block';
+            document.getElementById('auth-footer').style.display = 'none';
+            document.querySelector('.steps-indicator').style.display = 'none';
+            
+            setTimeout(() => {
+                Router.navigate('battles');
+            }, 2000);
+        } else {
+            showError(result.error);
+        }
+        
+        return false;
+    }
+    
+    function showError(msg) {
+        const el = document.getElementById('error-msg');
+        el.textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 5000);
+    }
+    
+    // Select first style by default
+    document.querySelector('.style-option').click();
+</script>
