@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punchi Battle | L'Arène des Mots</title>
+    
+    <!-- Favicon / Icône d'onglet -->
+    <link rel="icon" type="image/png" href="https://kimi-web-img.moonshot.cn/img/t4.ftcdn.net/eed7dce7c540a9223bf6612b54d1200f48d0d720.jpg">
+    <link rel="shortcut icon" type="image/png" href="https://kimi-web-img.moonshot.cn/img/t4.ftcdn.net/eed7dce7c540a9223bf6612b54d1200f48d0d720.jpg">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ff3e3e;
+            --primary-dark: #d63030;
+            --secondary: #1a1a2e;
+            --accent: #16213e;
+            --gold: #ffd700;
+            --text: #eaeaea;
+            --text-muted: #a0a0a0;
+            --surface: #0f0f1a;
+            --card: #1e1e2f;
+            --gradient: linear-gradient(135deg, #ff3e3e 0%, #ff6b6b 50%, #ff8e53 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(255, 62, 62, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+                var(--surface);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Header */
+        header {
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 15, 26, 0.8);
+            border-bottom: 1px solid rgba(255, 62, 62, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .logo h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--text);
+        }
+
+        nav a:hover::after, nav a.active::after {
+            width: 100%;
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+
+        /* Theme Section */
+        .theme-section {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem;
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 62, 62, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-section::before {
+            content: '🔥';
+            position: absolute;
+            font-size: 15rem;
+            opacity: 0.05;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .theme-label {
+            font-size: 0.9rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .theme-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(255, 62, 62, 0.3)); }
+            to { filter: drop-shadow(0 0 40px rgba(255, 62, 62, 0.6)); }
+        }
+
+        /* Battle Section */
+        .battle-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: 2px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .battle-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .battle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .battle-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 62, 62, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .battle-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 10px rgba(255, 62, 62, 0.3);
+        }
+
+        .author-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .author-info span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .punchline {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--text);
+            position: relative;
+            padding-left: 1.5rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .vote-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .vote-count span {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .vote-btn {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .vote-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 62, 62, 0.4);
+        }
+
+        .vote-btn.voted {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--secondary);
+        }
+
+        /* Participation Section */
+        .participate-section {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .participate-section::after {
+            content: '✍️';
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 4rem;
+            opacity: 0.1;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(255, 62, 62, 0.2);
+        }
+
+        .input-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: var(--gradient);
+            border: none;
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 62, 62, 0.4);
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #4ade80;
+        }
+
+        .message.error {
+            display: block;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #f87171;
+        }
+
+        /* Leaderboard */
+        .leaderboard-section {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+        }
+
+        .rank {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            width: 50px;
+            text-align: center;
+        }
+
+        .rank.gold { color: var(--gold); }
+        .rank.silver { color: #c0c0c0; }
+        .rank.bronze { color: #cd7f32; }
+
+        .leader-info {
+            flex: 1;
+        }
+
+        .leader-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .leader-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .wins {
+            background: var(--gradient);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 5%;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer span {
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+
+            nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .theme-text {
+                font-size: 2.5rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        /* Animations on scroll */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <h1>Punchi Battle</h1>
+            <span>L'Arène des Mots</span>
+        </div>
+        
+        <nav>
+            <a href="#" class="active">Accueil</a>
+            <a href="#">Battles</a>
+            <a href="#">Classement</a>
+            <a href="#">Profil</a>
+        </nav>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+        <!-- THEME -->
+        <section class="theme-section fade-in">
+            <div class="theme-label">Thème du Jour</div>
+            <h2 class="theme-text" id="theme-text">La Trahison</h2>
+        </section>
+
+        <!-- BATTLE -->
+        <section class="battle-section fade-in delay-1">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>⚔️</span>
+                    Battle en Cours
+                </h2>
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    En Direct
+                </div>
+            </div>
+
+            <div class="cards-grid" id="cards-container">
+                <!-- Cards will be generated by JS -->
+            </div>
+        </section>
+
+        <!-- PARTICIPATE -->
+        <section class="participate-section fade-in delay-2">
+            <h2 class="section-title">
+                <span>✍️</span>
+                Rejoins le Combat
+            </h2>
+            
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="pseudo">Ton Nom de Guerrier</label>
+                    <input type="text" id="pseudo" placeholder="Ex: Shadow, Morningstarr...">
+                </div>
+                
+                <div class="input-group">
+                    <label for="texte">Ta Punchline</label>
+                    <textarea id="texte" placeholder="Écris quelque chose qui frappe..."></textarea>
+                </div>
+                
+                <button class="submit-btn" onclick="envoyer()">Poster ma Punchline</button>
+                <div id="message" class="message"></div>
+            </div>
+        </section>
+
+        <!-- LEADERBOARD -->
+        <section class="leaderboard-section fade-in delay-3">
+            <h2 class="section-title">
+                <span>🏆</span>
+                Hall of Fame
+            </h2>
+            
+            <ul class="leaderboard-list" id="leaderboard">
+                <!-- Generated by JS -->
+            </ul>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 <span>Punchi Battle</span> — Tous droits réservés</p>
+    </footer>
+
+    <script>
+        // Data avec l'image de Morgan
+        const punchlines = [
+            {
+                id: 1,
+                author: "Morgan",
+                avatar: "/mnt/agents/upload/jojo.jpg",
+                text: "J'ai serré des mains qui cachaient des couteaux.",
+                votes: 727,
+                time: "2 min"
+            },
+            {
+                id: 2,
+                author: "LyricKiller",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+                text: "Ils parlaient d'amour mais visaient mon dos.",
+                votes: 298,
+                time: "5 min"
+            },
+            {
+                id: 3,
+                author: "StreetPoet",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+                text: "La loyauté coûte cher, les traîtres sont gratuits.",
+                votes: 156,
+                time: "8 min"
+            },
+            {
+                id: 4,
+                author: "FlowMaster",
+                avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
+                text: "Les sourires les plus beaux cachent les âmes les plus brisées.",
+                votes: 84,
+                time: "12 min"
+            }
+        ];
+
+        const leaderboard = [
+            { rank: 1, name: "Morgan", wins: 350, trend: "up" },
+            { rank: 2, name: "Big_Thug", wins: 229, trend: "stable" },
+            { rank: 3, name: "Shadow", wins: 155, trend: "up" },
+            { rank: 4, name: "NightWolf", wins: 142, trend: "down" },
+            { rank: 5, name: "LyricKiller", wins: 103, trend: "up" }
+        ];
+
+        let userVotes = new Set();
+
+        // Render Cards
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = punchlines.map(p => `
+                <div class="battle-card" data-id="${p.id}">
+                    <div class="card-author">
+                        <img src="${p.avatar}" alt="${p.author}" class="avatar">
+                        <div class="author-info">
+                            <h4>${p.author}</h4>
+                            <span>Il y a ${p.time}</span>
+                        </div>
+                    </div>
+                    <p class="punchline">"${p.text}"</p>
+                    <div class="card-actions">
+                        <div class="vote-count">
+                            <span>${p.votes}</span> votes
+                        </div>
+                        <button class="vote-btn ${userVotes.has(p.id) ? 'voted' : ''}" onclick="vote(${p.id})">
+                            ${userVotes.has(p.id) ? '✓ Voté' : '🔥 Voter'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render Leaderboard
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboard');
+            const rankClasses = ['gold', 'silver', 'bronze'];
+            
+            container.innerHTML = leaderboard.map((l, i) => `
+                <li class="leaderboard-item">
+                    <div class="rank ${rankClasses[i] || ''}">#${l.rank}</div>
+                    <div class="leader-info">
+                        <h3>${l.name}</h3>
+                        <p>${l.wins} victoires • Tendance ${l.trend}</p>
+                    </div>
+                    <div class="wins">${l.wins} 🏆</div>
+                </li>
+            `).join('');
+        }
+
+        // Vote Function
+        function vote(id) {
+            const card = punchlines.find(p => p.id === id);
+            const btn = document.querySelector(`[data-id="${id}"] .vote-btn`);
+            
+            if (userVotes.has(id)) {
+                // Unvote
+                userVotes.delete(id);
+                card.votes--;
+            } else {
+                // Vote
+                userVotes.add(id);
+                card.votes++;
+                
+                // Animation effect
+                btn.style.transform = 'scale(1.2)';
+                setTimeout(() => btn.style.transform = 'scale(1)', 200);
+            }
+            
+            renderCards();
+        }
+
+        // Submit Function
+        function envoyer() {
+            const pseudo = document.getElementById('pseudo').value.trim();
+            const texte = document.getElementById('texte').value.trim();
+            const message = document.getElementById('message');
+            
+            if (!pseudo || !texte) {
+                message.className = 'message error';
+                message.textContent = 'Remplis tous les champs, guerrier !';
+                return;
+            }
+            
+            if (texte.length < 10) {
+                message.className = 'message error';
+                message.textContent = 'Ta punchline est trop courte pour faire mal...';
+                return;
+            }
+            
+            // Add new punchline
+            const newPunchline = {
+                id: punchlines.length + 1,
+                author: pseudo,
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${pseudo}`,
+                text: texte,
+                votes: 0,
+                time: "À l'instant"
+            };
+            
+            punchlines.unshift(newPunchline);
+            renderCards();
+            
+            // Reset form
+            document.getElementById('pseudo').value = '';
+            document.getElementById('texte').value = '';
+            
+            message.className = 'message success';
+            message.textContent = 'Ta punchline est en lice ! Que le meilleur gagne. 🔥';
+            
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initialize
+        renderCards();
+        renderLeaderboard();
+
+        // Random theme rotation (demo)
+        const themes = ["La Trahison", "L'Ambition", "La Rue", "L'Amour Perdu", "La Victoire"];
+        let themeIndex = 0;
+        
+        setInterval(() => {
+            themeIndex = (themeIndex + 1) % themes.length;
+            document.getElementById('theme-text').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('theme-text').textContent = themes[themeIndex];
+                document.getElementById('theme-text').style.opacity = '1';
+            }, 300);
+        }, 10000);
+    </script>
+</body>
+</html>
