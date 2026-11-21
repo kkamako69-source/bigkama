@@ -35,3 +35,7 @@ python tools/check_site.py
 ```
 
 GitHub Actions lance aussi ce contrôle à chaque modification de la branche `main` et pour chaque pull request. Les avertissements (par exemple un fragment HTML ou une ressource locale introuvable) doivent être examinés ; un passage réussi ne remplace pas les tests dans un vrai navigateur.
+
+## Audit et suite
+
+Voir [TECHNICAL_AUDIT.md](TECHNICAL_AUDIT.md) pour les problèmes de chargement détectés dans l'ancienne architecture et le plan de migration. Ce dépôt reste une archive de travail ; le prototype ne doit pas être utilisé pour de vrais mots de passe ou comptes.
