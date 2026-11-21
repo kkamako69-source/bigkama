@@ -22,3 +22,9 @@ jobs:
           python-version: "3.12"
       - name: Check HTML structure
         run: python tools/check_site.py
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check inline JavaScript syntax
+        run: node tools/check_inline_js.cjs
