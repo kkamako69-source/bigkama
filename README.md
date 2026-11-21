@@ -25,3 +25,13 @@ Ouvre `index.html` dans un navigateur pour une première vérification visuelle.
 4. Documenter le déploiement et vérifier les contrôles de sécurité avant de publier.
 
 > État documenté : prototype à auditer, pas une confirmation que toutes les fonctions sont opérationnelles.
+
+## Contrôle automatique
+
+Le contrôle de structure HTML peut être lancé localement avec :
+
+```sh
+python tools/check_site.py
+```
+
+GitHub Actions lance aussi ce contrôle à chaque modification de la branche `main` et pour chaque pull request. Les avertissements (par exemple un fragment HTML ou une ressource locale introuvable) doivent être examinés ; un passage réussi ne remplace pas les tests dans un vrai navigateur.
