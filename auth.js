@@ -137,14 +137,24 @@ const Auth = {
     updateUI() {
         const container = document.getElementById('header-actions');
         if (!container) return;
-        
+
+        // User-controlled values can come from localStorage: always escape before HTML rendering.
+        const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[char]);
+
         if (this.currentUser) {
+            const avatar = escapeHTML(this.currentUser.avatar || 'MC');
+            const displayName = escapeHTML(this.currentUser.displayName || this.currentUser.username || 'MC');
+            const rawWins = Number(this.currentUser.stats?.wins);
+            const wins = Number.isFinite(rawWins) && rawWins >= 0 ? Math.floor(rawWins) : 0;
+
             container.innerHTML = `
-                <button class="user-menu" onclick="toggleUserMenu()">
-                    <div class="user-avatar">${this.currentUser.avatar}</div>
+                <button class="user-menu" type="button" onclick="toggleUserMenu()">
+                    <div class="user-avatar">${avatar}</div>
                     <div class="user-info">
-                        <span class="user-name">${this.currentUser.displayName}</span>
-                        <span class="user-rank">⭐ ${this.currentUser.stats.wins} wins</span>
+                        <span class="user-name">${displayName}</span>
+                        <span class="user-rank">⭐ ${wins} wins</span>
                     </div>
                 </button>
                 <div class="user-dropdown" id="user-dropdown" style="display: none;">
