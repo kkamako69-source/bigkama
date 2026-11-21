@@ -6,12 +6,12 @@
 const Router = {
     currentPage: 'accueil',
     routes: {
-        'accueil': { title: 'Accueil', file: 'pages/accueil.html' },
-        'battles': { title: 'Battles', file: 'pages/battles.html' },
-        'classement': { title: 'Classement', file: 'pages/classement.html' },
-        'profil': { title: 'Profil', file: 'pages/profil.html' },
-        'login': { title: 'Connexion', file: 'auth/login.html', auth: false },
-        'register': { title: 'Inscription', file: 'auth/register.html', auth: false }
+        'accueil': { title: 'Accueil', file: 'accueil.html', auth: false },
+        'battles': { title: 'Battles', file: 'battles.html', auth: false },
+        'classement': { title: 'Classement', file: 'classement.html', auth: false },
+        'profil': { title: 'Profil', file: 'profil.html' },
+        'login': { title: 'Connexion', file: 'login.html', auth: false },
+        'register': { title: 'Inscription', file: 'register.html', auth: false }
     },
     
     init() {
@@ -24,17 +24,21 @@ const Router = {
         
         // Clics sur liens
         document.addEventListener('click', (e) => {
-            if (e.target.matches('[data-page]')) {
+            const link = e.target.closest('[data-page]');
+            if (link) {
                 e.preventDefault();
-                const page = e.target.dataset.page;
-                this.navigate(page);
+                this.navigate(link.dataset.page);
             }
         });
     },
     
     navigate(page) {
-        window.location.hash = page;
-        this.handleRoute();
+        const nextHash = '#' + page;
+        if (window.location.hash === nextHash) {
+            this.handleRoute();
+        } else {
+            window.location.hash = page;
+        }
     },
     
     async handleRoute() {
