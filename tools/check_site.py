@@ -23,6 +23,8 @@ class PageAudit(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         data = dict(attrs)
+        if tag == "title":
+            self.in_title = True
         if tag == "html":
             self.html_lang = data.get("lang") or ""
         if "id" in data and data["id"]:
