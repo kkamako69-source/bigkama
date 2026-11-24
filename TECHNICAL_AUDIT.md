@@ -1,29 +1,32 @@
 # Audit technique — dépôt bigkama
 
-Date : 21 novembre 2026. Inspection en lecture du dépôt `main`.
+Dernière revue : 24 novembre 2026.
 
 ## Résultat
 
-Le dépôt contient des fragments HTML, une première version de Punchi Battle et plusieurs essais d'architecture. Il ne doit pas être considéré comme une version de production avant correction des chargements JavaScript.
+Le dépôt contient une ancienne maquette Punchi Battle et plusieurs essais d’architecture. Il est désormais conservé comme archive de conception ; la version de travail principale est le dépôt `punchi-battle`.
 
-## Problèmes constatés et corrections appliquées
+## Corrections déjà appliquées
 
-1. **Corrigé le 21 novembre 2026 :** `index.html` charge maintenant les modules racine `storage.js`, `auth.js` et `router.js`. Les anciens `js/auth.js` et `js/router.js` ne sont plus chargés par la page d'accueil. Ils restent des essais historiques.
-2. L'ancien `js/router.js` contient des imports Vue et des composants `.vue` absents du dépôt ; il ne doit pas être réactivé sans ajouter une vraie configuration de build et les composants.
-3. L'ancien `js/storage.js` est un squelette. Le fichier racine `storage.js` reste un stockage `localStorage` de démonstration, pas une base de données distante.
-4. Les pages racine `accueil.html`, `battles.html`, `classement.html`, `login.html`, `register.html` et `profil.html` sont des fragments chargés par le routeur racine ; elles ne sont pas destinées à être servies individuellement comme pages complètes.
-5. Le routeur racine a été ajusté pour utiliser les vrais chemins des fragments et permettre aux pages de battle et classement d'être consultées sans compte.
+1. Le point d’entrée `index.html` charge les modules racine `storage.js`, `auth.js` et `router.js`. Les anciens modules dans `js/` ne doivent pas être réactivés sans les dépendances et le build correspondants.
+2. Le routeur racine utilise les véritables chemins des fragments et laisse les pages de battles/classement consulter la démonstration.
+3. Les valeurs de profil sont échappées avant insertion HTML dans l’en-tête.
+4. Le contrôle HTML et l’analyse de syntaxe JavaScript sont intégrés à GitHub Actions ; CodeQL est planifié chaque semaine ; Dependabot suit les actions.
+5. **24 novembre 2026 :** l’authentification locale a été désactivée. L’ancienne fonction utilisait un hash non cryptographique côté navigateur et persistait des comptes dans `localStorage`. Le nouvel `auth.js` ne lit plus les sessions locales, n’accepte plus les inscriptions/connexions, et ne stocke aucun nouveau mot de passe.
+6. Les fausses entrées OAuth Google/X ont été retirées des écrans de connexion ; l’interface indique qu’elles ne sont pas configurées.
+7. Une notice de confidentialité et des conditions de démonstration ont été ajoutées. Le consentement à une newsletter n’est plus coché par défaut ; aucun envoi d’e-mail n’est implémenté.
 
-## Recommandation
+## Limites qui subsistent
 
-Ne pas mélanger les fichiers Express/Vue et le front-end statique. Choisir une seule voie :
-- soit un front-end statique vanilla avec API distante clairement définie ;
-- soit une application Vue avec `package.json`, composants présents, build et déploiement configurés.
+- `storage.js` conserve encore les données fictives de l’ancienne maquette pour l’affichage. Ne pas les confondre avec des données réelles.
+- Les anciennes données présentes dans le `localStorage` d’un navigateur ne sont pas effacées automatiquement. L’utilisateur peut nettoyer le stockage du site depuis son navigateur.
+- Le dossier `js/` contient un ancien code serveur Express/Vue, y compris des exemples de secrets. Ne jamais le déployer directement. Aucun secret d’environnement ne doit être commité.
+- Les pages d’authentification demeurent visibles à des fins de documentation mais les fonctions de compte renvoient maintenant un message de désactivation.
 
-La voie de migration recommandée pour la suite est de reprendre le prototype principal dans `punchi-battle` et de conserver `bigkama` comme archive de travail jusqu'à comparaison visuelle et fonctionnelle.
+## Architecture recommandée
+
+Conserver `bigkama` comme archive, et développer la version principale dans `punchi-battle` avec Supabase Auth, PostgreSQL et RLS. Avant de connecter les formulaires publics, ajouter des tests réels avec au moins deux comptes distincts et un visiteur anonyme, tester l’email de confirmation, les redirections et les règles de modération.
 
 ## Sécurité
 
-- Le fichier racine `auth.js` utilise actuellement un stockage local et un hachage de démonstration très simple. L'avis visible sur le site interdit donc d'y saisir un vrai mot de passe ou un mot de passe réutilisé. Ce n'est pas une authentification de production.
-- Le dossier `js/` contient un ancien serveur Express avec une valeur de secret JWT d'exemple codée en dur (`your_jwt_secret`). Ne jamais déployer cet essai tel quel. Pour une future authentification, utiliser Supabase Auth ou un backend avec Argon2id/bcrypt approprié, secrets en variables d'environnement, sessions sûres et contrôle d'accès serveur.
-- Les valeurs de profil affichées dans l'en-tête sont désormais échappées avant injection HTML, mais cela ne transforme pas le système local en backend sécurisé.
+Aucun vrai mot de passe, adresse e-mail ou secret ne doit être saisi dans cette archive. Ne jamais placer de clé Supabase secret/service-role dans le navigateur. Une clé publishable ne peut être exposée que si chaque table exposée est protégée par des policies RLS testées.
