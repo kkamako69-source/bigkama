@@ -207,6 +207,7 @@
             <p>Retrouve tes battles et continue ta légende</p>
         </div>
 
+        <div role="note" style="padding:12px 14px;margin:0 0 18px;border:1px solid #f0b34d;border-radius:10px;background:#fff7e6;color:#6d4300;line-height:1.5"><strong>Mode démonstration :</strong> la connexion n’est pas disponible dans cette archive. N’entre aucun vrai e-mail ni mot de passe.</div>
         <div class="error-message" id="error-msg"></div>
 
         <form class="auth-form" onsubmit="return handleLogin(event)">
@@ -225,24 +226,13 @@
                     <input type="checkbox" checked>
                     <span>Se souvenir de moi</span>
                 </label>
-                <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+                <span class="forgot-password">Récupération indisponible en démo</span>
             </div>
 
             <button type="submit" class="auth-btn">Se connecter</button>
         </form>
 
-        <div class="auth-divider">Ou continue avec</div>
-
-        <div class="social-auth">
-            <button class="social-btn" onclick="socialLogin('google')">
-                <span>🔍</span>
-                <span>Google</span>
-            </button>
-            <button class="social-btn" onclick="socialLogin('twitter')">
-                <span>🐦</span>
-                <span>Twitter</span>
-            </button>
-        </div>
+        <p style="text-align:center;color:var(--text-muted)">Les connexions Google et X ne sont pas configurées.</p>
 
         <div class="auth-footer">
             Pas encore de compte ? <a href="#register">Inscris-toi</a>
