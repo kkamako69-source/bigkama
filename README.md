@@ -1,41 +1,37 @@
-# Punchi Battle — dépôt `bigkama`
+# Punchi Battle — dépôt historique `bigkama`
 
-Prototype web de **Punchi Battle**, une arène de battles de punchlines.
+Ce dépôt conserve une ancienne maquette de **Punchi Battle**. Le prototype principal est développé séparément dans [`punchi-battle`](https://github.com/kkamako69-source/punchi-battle).
 
-## Contenu
-- `index.html` : point d’entrée du prototype.
-- `accueil.html`, `battles.html`, `classement.html`, `profil.html` : pages de l’interface.
-- `login.html`, `register.html` : écrans de connexion et d’inscription.
-- `js/`, `pages/`, `auth/` : modules et éléments complémentaires.
-- Plusieurs fichiers à la racine semblent être des versions historiques ; les comparer avant de les supprimer.
+## Rôle de cette archive
 
-## Démarrage
-Ouvre `index.html` dans un navigateur pour une première vérification visuelle. Les fonctions qui nécessitent un serveur ne peuvent pas être considérées comme opérationnelles sur la seule base de cette ouverture locale.
+- `index.html` : point d’entrée de la maquette historique.
+- `accueil.html`, `battles.html`, `classement.html`, `profil.html` : fragments de l’interface.
+- `login.html`, `register.html` : anciens écrans conservés pour documenter l’évolution du projet.
+- `storage.js`, `auth.js`, `router.js` à la racine : modules de démonstration.
+- `js/` et `auth/` : essais historiques, notamment des fichiers serveur/Vue qui ne sont pas chargés par le point d’entrée statique.
 
-## Points bloquants avant une mise en production
-- L’index charge `js/auth.js` comme script du navigateur, mais le fichier actuellement présent utilise Node.js/Express, `require()` et `module.exports`. Cette intégration doit être séparée entre client et serveur.
-- `js/storage.js` contient un stockage de démonstration incomplet.
-- Le fichier d’authentification contient une clé JWT d’exemple codée en dur (`your_jwt_secret`). Elle ne doit jamais être utilisée en production ; un secret doit être fourni côté serveur par variable d’environnement.
-- Ne pas utiliser de vrais mots de passe ni de données personnelles avant l’implémentation et la vérification d’un backend sécurisé.
+## Sécurité des comptes
 
-## Priorités de maintenance
-1. Définir l’architecture client/serveur et supprimer les doublons seulement après comparaison.
-2. Mettre en place l’authentification serveur et le stockage persistant.
-3. Tester navigation, connexion, inscription, profils, battles et classement sur mobile et ordinateur.
-4. Documenter le déploiement et vérifier les contrôles de sécurité avant de publier.
+**L’inscription et la connexion sont désactivées dans cette archive.** Une ancienne version stockait localement des mots de passe sous forme de hachage faible, ce qui n’est pas adapté à une authentification réelle. Le nouveau module `auth.js` refuse maintenant toute création de compte et toute connexion locale. Les anciennes données enregistrées dans un navigateur ne sont pas automatiquement supprimées.
 
-> État documenté : prototype à auditer, pas une confirmation que toutes les fonctions sont opérationnelles.
+Ne saisis aucun vrai mot de passe, adresse e-mail ou donnée personnelle dans cette archive. La version principale `punchi-battle` dispose maintenant d’un backend Supabase Auth préparé et d’un schéma PostgreSQL avec RLS ; son interface publique reste toutefois en mode démonstration tant que les tests d’intégration ne sont pas terminés.
 
-## Contrôle automatique
+## Démarrage et contrôles
 
-Le contrôle de structure HTML peut être lancé localement avec :
+Ouvre `index.html` pour consulter la maquette. Les interactions de démonstration peuvent être conservées localement ; cela ne crée aucun compte public et ne garantit pas l’intégrité d’un vote.
 
 ```sh
 python tools/check_site.py
+node tools/check_inline_js.cjs
 ```
 
-GitHub Actions lance aussi ce contrôle à chaque modification de la branche `main` et pour chaque pull request. Les avertissements (par exemple un fragment HTML ou une ressource locale introuvable) doivent être examinés ; un passage réussi ne remplace pas les tests dans un vrai navigateur.
+GitHub Actions exécute les contrôles sur les commits et pull requests. CodeQL analyse le JavaScript, et Dependabot propose chaque semaine les mises à jour des GitHub Actions.
 
-## Audit et suite
+## Documents
 
-Voir [TECHNICAL_AUDIT.md](TECHNICAL_AUDIT.md) pour les problèmes de chargement détectés dans l'ancienne architecture et le plan de migration. Ce dépôt reste une archive de travail ; le prototype ne doit pas être utilisé pour de vrais mots de passe ou comptes.
+- [Audit technique](TECHNICAL_AUDIT.md)
+- [Conditions de la démo](conditions.html)
+- [Notice de confidentialité](confidentialite.html)
+- [Politique de sécurité](SECURITY.md)
+
+> Statut : archive de conception et de comparaison, pas un service d’authentification ou une plateforme de concours en production.
