@@ -19,6 +19,7 @@ class PageAudit(HTMLParser):
         self.in_title = False
         self.ids: list[str] = []
         self.images_without_alt = 0
+        self.external_blank_without_rel = 0
         self.local_refs: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -31,6 +32,10 @@ class PageAudit(HTMLParser):
             self.ids.append(data["id"])
         if tag == "img" and "alt" not in data:
             self.images_without_alt += 1
+        if tag == "a" and (data.get("target") or "").lower() == "_blank":
+            rel_tokens = set((data.get("rel") or "").lower().split())
+            if not {"noopener", "noreferrer"}.intersection(rel_tokens):
+                self.external_blank_without_rel += 1
         for key in ("src", "href"):
             value = data.get(key)
             if not value:
@@ -93,6 +98,8 @@ def main() -> int:
             errors.append(f"{relative}: identifiants HTML dupliqués: {', '.join(duplicates)}")
         if parser.images_without_alt:
             warnings.append(f"{relative}: {parser.images_without_alt} image(s) sans attribut alt")
+        if parser.external_blank_without_rel:
+            warnings.append(f"{relative}: {parser.external_blank_without_rel} lien(s) target=_blank sans rel=noopener/noreferrer")
         for ref in parser.local_refs:
             if ref.startswith("/"):
                 target = ROOT / ref.lstrip("/")
