@@ -1,184 +1,41 @@
 /**
- * PUNCHI BATTLE - Système d'authentification
- * Inscription, connexion, session, profil
+ * PUNCHI BATTLE — authentification de démonstration désactivée.
+ * Cette archive ne possède pas de backend d'identité.
+ * Ne jamais stocker un mot de passe ou son hash dans localStorage.
+ * L'authentification réelle est préparée séparément dans le dépôt punchi-battle.
  */
-
 const Auth = {
     currentUser: null,
-    
     init() {
-        const session = Storage.get('session');
-        if (session && session.expires > Date.now()) {
-            this.currentUser = session.user;
-        }
-        this.updateUI();
-    },
-    
-    register(userData) {
-        const users = Storage.get('users', []);
-        
-        // Vérifications
-        if (users.find(u => u.email === userData.email)) {
-            return { success: false, error: 'Email déjà utilisé' };
-        }
-        if (users.find(u => u.username === userData.username)) {
-            return { success: false, error: 'Pseudo déjà pris' };
-        }
-        if (userData.password.length < 6) {
-            return { success: false, error: 'Mot de passe trop court (6 caractères min)' };
-        }
-        
-        // Création utilisateur
-        const newUser = {
-            id: 'user_' + Date.now(),
-            username: userData.username,
-            email: userData.email,
-            password: this.hashPassword(userData.password),
-            avatar: userData.username.substring(0, 2).toUpperCase(),
-            displayName: userData.displayName || userData.username,
-            bio: '',
-            style: userData.style || 'hardcore',
-            joined: new Date().toISOString().split('T')[0],
-            stats: {
-                battles: 0,
-                wins: 0,
-                votesGiven: 0,
-                votesReceived: 0,
-                streak: 0,
-                bestRank: null
-            },
-            achievements: ['newcomer'],
-            followers: 0,
-            following: 0,
-            isVerified: false,
-            isPremium: false,
-            settings: {
-                notifications: true,
-                private: false,
-                theme: 'dark'
-            }
-        };
-        
-        users.push(newUser);
-        Storage.set('users', users);
-        
-        // Connexion automatique
-        this.login(userData.email, userData.password);
-        
-        return { success: true, user: newUser };
-    },
-    
-    login(email, password) {
-        const users = Storage.get('users', []);
-        const user = users.find(u => u.email === email && u.password === this.hashPassword(password));
-        
-        if (!user) {
-            return { success: false, error: 'Email ou mot de passe incorrect' };
-        }
-        
-        // Créer session
-        const session = {
-            user: { ...user, password: undefined },
-            expires: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 jours
-        };
-        
-        Storage.set('session', session);
-        this.currentUser = session.user;
-        this.updateUI();
-        
-        return { success: true, user: this.currentUser };
-    },
-    
-    logout() {
-        Storage.remove('session');
         this.currentUser = null;
         this.updateUI();
-        Router.navigate('accueil');
     },
-    
-    updateProfile(updates) {
-        if (!this.currentUser) return { success: false, error: 'Non connecté' };
-        
-        const users = Storage.get('users', []);
-        const index = users.findIndex(u => u.id === this.currentUser.id);
-        
-        if (index === -1) return { success: false, error: 'Utilisateur non trouvé' };
-        
-        // Mise à jour
-        users[index] = { ...users[index], ...updates };
-        Storage.set('users', users);
-        
-        // Mettre à jour session
-        this.currentUser = { ...this.currentUser, ...updates };
-        Storage.set('session', {
-            user: this.currentUser,
-            expires: Date.now() + (7 * 24 * 60 * 60 * 1000)
-        });
-        
+    register() {
+        return { success: false, error: "Inscription désactivée dans cette archive. N'entre aucun vrai mot de passe. Consulte la version principale Punchi Battle." };
+    },
+    login() {
+        return { success: false, error: "Connexion désactivée dans cette archive. Aucun compte réel n'est géré ici." };
+    },
+    logout() {
+        if (typeof Storage !== "undefined") Storage.remove("session");
+        this.currentUser = null;
         this.updateUI();
-        return { success: true, user: this.currentUser };
+        if (typeof Router !== "undefined") Router.navigate("accueil");
     },
-    
-    hashPassword(password) {
-        // Simple hash (à remplacer par bcrypt côté serveur)
-        let hash = 0;
-        for (let i = 0; i < password.length; i++) {
-            const char = password.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return 'pb_' + Math.abs(hash).toString(16);
+    updateProfile() {
+        return { success: false, error: "La gestion des profils nécessite le backend de la version principale." };
     },
-    
-    isLoggedIn() {
-        return !!this.currentUser;
-    },
-    
+    isLoggedIn() { return false; },
     updateUI() {
-        const container = document.getElementById('header-actions');
+        const container = document.getElementById("header-actions");
         if (!container) return;
-
-        // User-controlled values can come from localStorage: always escape before HTML rendering.
-        const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-        })[char]);
-
-        if (this.currentUser) {
-            const avatar = escapeHTML(this.currentUser.avatar || 'MC');
-            const displayName = escapeHTML(this.currentUser.displayName || this.currentUser.username || 'MC');
-            const rawWins = Number(this.currentUser.stats?.wins);
-            const wins = Number.isFinite(rawWins) && rawWins >= 0 ? Math.floor(rawWins) : 0;
-
-            container.innerHTML = `
-                <button class="user-menu" type="button" onclick="toggleUserMenu()">
-                    <div class="user-avatar">${avatar}</div>
-                    <div class="user-info">
-                        <span class="user-name">${displayName}</span>
-                        <span class="user-rank">⭐ ${wins} wins</span>
-                    </div>
-                </button>
-                <div class="user-dropdown" id="user-dropdown" style="display: none;">
-                    <a href="#profil">Mon Profil</a>
-                    <a href="#parametres">Paramètres</a>
-                    <hr>
-                    <a href="#" onclick="Auth.logout(); return false;">Déconnexion</a>
-                </div>
-            `;
-        } else {
-            container.innerHTML = `
-                <a href="#login" class="btn-login">Connexion</a>
-            `;
-        }
+        container.textContent = "";
+        const notice = document.createElement("span");
+        notice.className = "demo-auth-notice";
+        notice.textContent = "Mode démo · Comptes désactivés";
+        notice.setAttribute("role", "status");
+        container.appendChild(notice);
     }
 };
-
-function toggleUserMenu() {
-    const dropdown = document.getElementById('user-dropdown');
-    if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-}
-
-function updateHeaderAuth() {
-    Auth.init();
-}
+function toggleUserMenu() {}
+function updateHeaderAuth() { Auth.init(); }
